@@ -1,0 +1,129 @@
+{extend name="base/base"}
+{block name="link"}
+<link rel="stylesheet" href="_CSS_/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="_CSS_/admin/dist/css/skins/_all-skins.min.css">
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        订单管理
+        <small>待发货</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">订单管理</a></li>
+        <li class="active">待发货订单</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">待发货订单记录</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>订单id</th>
+                            <th>商品名称</th>
+                            <th>订单编号</th>
+                            <th>下单时间</th>
+                            <th>总数量</th>
+                            <th>总价</th>
+                            <th>状态</th>
+                            <th>交易操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach name="list" item="value"}
+                        <tr>
+                            <td>{$value.id}</td>
+                            <td>{$value.snap_name}</td>
+                            <td>{$value.order_no}</td>
+                            <td>{$value.create_time}</td>
+                            <td>{$value.total_count}</td>
+                            <td>{$value.total_price}/元</td>
+                            <th>待发货</th>
+                            <th>
+                                <button type="button" class="btn btn btn-warning" value="{$value.id}">确认发货</button>
+                                <button type="button" class="btn btn-success" value="{$value.id}">查看详情</button>
+                            </th>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>订单id</th>
+                            <th>商品名称</th>
+                            <th>订单编号</th>
+                            <th>下单时间</th>
+                            <th>总数量</th>
+                            <th>总价</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+{/block}
+{block name="js"}
+<!-- DataTables -->
+<script src="_JS_/admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="_JS_/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- SlimScroll -->
+<script src="_JS_/admin/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="_JS_/admin/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="_JS_/admin/dist/js/demo.js"></script>
+<!-- page script -->
+<script src="_JS_/admin/layer/layer.js"></script>
+<script>
+    $(function () {
+        $('#example1').DataTable()
+        $('#example2').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'searching'   : false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false
+        })
+    });
+    $(".btn-warning").click(function () {
+        var id = $(this).val();
+            $.ajax({
+                type:"get",
+                url:"{:url('api/admin/closeOrder')}",
+                data:{'id':id,'num': 3 ,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+                success:function(data){
+                    if(data == 3){
+                        layer.msg('操作成功！', {icon: 1});
+                        setTimeout("window.location.reload()",1000);
+                    }else{
+                        layer.msg('操作失败！', {icon: 2});
+                    }
+                },
+                error:function(error){
+                    alert(error);
+                }
+            });
+    });
+    $(".btn-success").click(function () {
+        var id = $(this).val();
+        window.location.href='{:url("api/admin/invoice")}?id='+ id ;
+    })
+</script>
+{/block}

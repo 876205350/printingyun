@@ -1,0 +1,100 @@
+{extend name="base/base"}
+{block name="link"}
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        用户管理
+        <small>修改密码</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">用户管理</a></li>
+        <li class="active">修改密码</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<div class="box box-info">
+    <div class="box-header with-border">
+        <h3 class="box-title">修改密码</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+    <form class="form-horizontal">
+        <div class="box-body" style="width: 40%">
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">当前密码</label>
+
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="password" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword3" class="col-sm-2 control-label">新密码</label>
+
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="inputPassword3" placeholder="Password" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword4" class="col-sm-2 control-label">确认新密码</label>
+
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="inputPassword4" placeholder="Password" required="required">
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer" style="width: 40%">
+            <button type="submit" class="btn btn-default">Cancel</button>
+            <button type="submit" class="btn btn-info pull-right" onclick="change()">确认修改</button>
+        </div>
+        <!-- /.box-footer -->
+    </form>
+</div>
+{/block}
+{block name="js"}
+<script src="_JS_/admin/layer/layer.js"></script>
+<script>
+    function change() {
+        var oldpassword = $("#inputEmail3").val();
+        var password = $("#inputPassword3").val();
+        var repassword = $("#inputPassword4").val();
+        if(oldpassword != "" && password != "" && repassword != ""){
+            if (password == repassword){
+                layer.confirm('确认修改密码吗？', {
+                    btn: ['是','否'] //按钮
+                }, function(){
+                    $.ajax({
+                        type:"post",
+                        url:"{:url('api/admin/updatePassword')}",
+                        data:{'oldpassword':oldpassword,'password':password ,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+                        success:function(data){
+                            if (data){
+                                layer.msg('新密码修改成功！', {icon: 1});
+                                function logut()
+                                {
+                                    window.location.replace("{:url('api/admin/logout')}");
+                                }
+                                setInterval(logut,1000);//设置1000毫秒后执行g函数
+                            }else {
+                                layer.msg('密码修改失败！', {icon: 2});
+                            }
+                        },
+                        error:function(error){
+                            alert(error);
+                        }
+                    });
+                    // layer.msg('的确很重要', {icon: 1});
+                });
+            }else {
+                layer.msg('新密码输入不一致！', {icon: 2});
+            }
+        }else {
+            return;
+        }
+
+    }
+</script>
+{/block}

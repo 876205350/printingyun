@@ -1,0 +1,96 @@
+{extend name="base/base"}
+{block name="link"}
+<link rel="stylesheet" href="_CSS_/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="_CSS_/admin/dist/css/skins/_all-skins.min.css">
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        订单管理
+        <small>代签收</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">订单管理</a></li>
+        <li class="active">代签收订单</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">代签收订单记录</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>订单id</th>
+                            <th>商品名称</th>
+                            <th>订单编号</th>
+                            <th>下单时间</th>
+                            <th>总数量</th>
+                            <th>总价</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach name="list" item="value"}
+                        <tr>
+                            <td>{$value.id}</td>
+                            <td>{$value.snap_name}</td>
+                            <td>{$value.order_no}</td>
+                            <td>{$value.create_time}</td>
+                            <td>{$value.total_count}</td>
+                            <td>{$value.total_price}/元</td>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>订单id</th>
+                            <th>商品名称</th>
+                            <th>订单编号</th>
+                            <th>下单时间</th>
+                            <th>总数量</th>
+                            <th>总价</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+{/block}
+{block name="js"}
+<!-- DataTables -->
+<script src="_JS_/admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="_JS_/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- SlimScroll -->
+<script src="_JS_/admin/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="_JS_/admin/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="_JS_/admin/dist/js/demo.js"></script>
+<!-- page script -->
+<script>
+    $(function () {
+        $('#example1').DataTable()
+        $('#example2').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'searching'   : false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false
+        })
+    })
+</script>
+{/block}

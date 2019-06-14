@@ -1,0 +1,211 @@
+{extend name="base/base"}
+{block name="link"}
+<link rel="stylesheet" href="_CSS_/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="_CSS_/admin/dist/css/skins/_all-skins.min.css">
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        文库管理
+        <small>文件分类</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">文库管理</a></li>
+        <li class="active">文件分类</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">文件分类</h3>
+                </div>
+                <div style="width: 154px;margin-left: 10px">
+                    <button type="button" class="btn btn-block btn-info" >
+                        添加新文件
+                    </button>
+                </div>
+                <!-- /.box-header -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">打印金额修改</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="recipient-name" class="control-label">文件名称:</label>
+                                        <input type="text" class="form-control" id="recipient-name" disabled=false>
+                                        <label for="recipient-name" class="control-label">单面价格(/元):</label>
+                                        <input type="text" class="form-control" id="recipient-price" placeholder="单面价格" onkeyup="num(this)" onfocus="indataone()" onblur="outdataone()"  >
+                                        <label for="recipient-name" class="control-label">双面价格(/元):</label>
+                                        <input type="text" class="form-control" id="double-price" placeholder="双面价格" onkeyup="num(this)" onfocus="indatatwo()" onblur="outdatatwo()">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary">修改</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>文件名</th>
+                            <th>单面打印价</th>
+                            <th>双面打印价</th>
+                            <th>上传时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach name="list" item="value"}
+                        <tr>
+                            <td>{$value.id}</td>
+                            <td><i class="fa fa-folder-open"></i>{$value.name}</td>
+                            <td>￥{$value.price}</td>
+                            <td>￥{$value.doubleprice}</td>
+                            <td>{$value.create_time}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" value="{$value.id}">删除</button>
+                                <button type="button" class="btn btn-success" value="{$value.id},{$value.name}" data-toggle="modal" data-target="#myModal">修改</button>
+                            </td>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>id</th>
+                            <th>文件名</th>
+                            <th>单面打印价</th>
+                            <th>双面打印价</th>
+                            <th>上传时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+{/block}
+{block name="js"}
+<!-- DataTables -->
+<script src="_JS_/admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="_JS_/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- SlimScroll -->
+<script src="_JS_/admin/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="_JS_/admin/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="_JS_/admin/dist/js/demo.js"></script>
+<!-- page script -->
+<script src="_JS_/admin/layer/layer.js"></script>
+<script>
+    $(function () {
+        $('#example1').DataTable()
+        $('#example2').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'searching'   : false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false
+        })
+    });
+    function num(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,""); //清除"数字"和"."以外的字符
+        obj.value = obj.value.replace(/^\./g,""); //验证第一个字符是数字
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个, 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+    };
+    function indataone() {
+        var doubleprice = $("#double-price").val();
+        if(doubleprice!=" "){
+            $("#recipient-price").val(doubleprice*4/3);
+        }
+    }
+    function indatatwo() {
+        var price = $("#recipient-price").val();
+        if(price!=" "){
+            $("#double-price").val(price*3/4);
+        }
+    }
+    function outdataone() {
+       $("#recipient-price").val();
+    }
+    function outdatatwo() {
+       $("#double-price").val();
+    }
+    $('.btn-danger').click(function () {
+        var id = $(this).val();
+        layer.confirm('是否删除该文件？', {
+            btn: ['确认','否'] //按钮
+        }, function(){
+            $.ajax({
+                type:"get",
+                url:"{:url('api/admin/deleteProductOne')}",
+                data:{'id':id,'num':2,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+                success:function(data){
+                    if(data == 2){
+                        layer.msg('操作成功！', {icon: 1});
+                        setTimeout("window.location.reload()",1000);
+                    }else{
+                        layer.msg('操作失败！', {icon: 3});
+                    }
+                },
+                error:function(error){
+                    alert(error);
+                }
+            });
+        });
+    });
+    $('.btn-success').click(function () {
+        var data = $(this).val();
+        var arr = new Array(2) ;
+            arr=data.split(',');
+        $("#recipient-name").val(arr[1]);
+        $(".btn-primary").val(arr[0]);
+    });
+    $('.btn-primary').click(function () {
+        var id = $(this).val()
+        var price = $("#recipient-price").val();
+        var doubleprice = $("#double-price").val();
+        $.ajax({
+            type:"post",
+            url:"{:url('api/admin/updateProduct')}",
+            data:{'id':id,'price':price,'doubleprice':doubleprice,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+            success:function(data){
+                if(data){
+                    layer.msg('操作成功！', {icon: 1});
+                    setTimeout("window.location.reload()",1000);
+                }else{
+                    layer.msg('操作失败！', {icon: 3});
+                }
+            },
+            error:function(error){
+                alert(error);
+            }
+        });
+    });
+    $(".btn-block").click(function () {
+        window.location.href='{:url("api/admin/upload")}';
+    })
+</script>
+{/block}

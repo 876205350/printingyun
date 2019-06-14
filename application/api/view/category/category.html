@@ -1,0 +1,169 @@
+{extend name="base/base"}
+{block name="link"}
+<link rel="stylesheet" href="_CSS_/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="_CSS_/admin/dist/css/skins/_all-skins.min.css">
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        文库管理
+        <small>文件分类</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">文库管理</a></li>
+        <li class="active">文件分类</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">文件分类</h3>
+                </div>
+                <div style="width: 154px;margin-left: 10px">
+                    <button type="button" class="btn btn-block btn-info" data-toggle="modal" data-target="#myModal">
+                        添加新分类
+                    </button>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">新增分类名</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="recipient-name" placeholder="填写类名">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>分类名称</th>
+                            <th>文件数量</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach name="list" item="value"}
+                        <tr>
+                            <td>{$value.id}</td>
+                            <td><i class="fa fa-fw fa-folder"></i>{$value.name}</td>
+                            <td>{$value.num}</td>
+                            <td >
+                                <button type="button" class="btn btn-danger" value="{$value.id}">删除</button>
+                                <button type="button" class="btn btn-success" value="{$value.id}">查看详情</button>
+                            </td>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>id</th>
+                            <th>分类名称</th>
+                            <th>文件数量</th>
+                            <th>操作</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+{/block}
+{block name="js"}
+<!-- DataTables -->
+<script src="_JS_/admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="_JS_/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- SlimScroll -->
+<script src="_JS_/admin/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="_JS_/admin/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="_JS_/admin/dist/js/demo.js"></script>
+<!-- page script -->
+<script src="_JS_/admin/layer/layer.js"></script>
+<script>
+    $(function () {
+        $('#example1').DataTable()
+        $('#example2').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'searching'   : false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false
+        })
+    });
+    $('.btn-danger').click(function () {
+        var id = $(this).val();
+        layer.confirm('是否删除该文件？', {
+            btn: ['是','否'] //按钮
+        }, function(){
+            $.ajax({
+                type:"get",
+                url:"{:url('api/admin/deleteCategory')}",
+                data:{'id':id,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+                success:function(data){
+                    if(data){
+                        layer.msg('操作成功！', {icon: 1});
+                        setTimeout("window.location.reload()",1000);
+                    }else{
+                        layer.msg('操作失败！', {icon: 3});
+                    }
+                },
+                error:function(error){
+                    alert(error);
+                }
+            });
+        });
+    });
+    $('.btn-success').click(function () {
+        var id = $(this).val();
+        window.location.href='{:url("api/admin/content")}?id='+ id ;
+    })
+    $('.btn-primary').click(function () {
+        var name = $("#recipient-name").val();
+        if(name != ""){
+            $.ajax({
+                type:"post",
+                url:"{:url('api/admin/insertCategory')}",
+                data:{'name':name,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+                success:function(data){
+                    if(data){
+                        layer.msg('操作成功！', {icon: 1});
+                        setTimeout("window.location.reload()",1000);
+                    }else{
+                        layer.msg('操作失败！', {icon: 3});
+                    }
+                },
+                error:function(error){
+                    alert(error);
+                }
+            });
+        }
+    })
+</script>
+{/block}

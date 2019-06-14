@@ -1,0 +1,172 @@
+{extend name="base/base"}
+block name="link"}
+<link rel="stylesheet" href="_CSS_/admin/dist/css/skins/_all-skins.min.css">
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        订单管理
+        <small>订单详情</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">订单管理</a></li>
+        <li class="active">订单详情</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<section class="invoice">
+    <!-- title row -->
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="page-header">
+                <i class="fa fa-globe"></i> 订单详情
+                <small class="pull-right"></small>
+            </h2>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- info row -->
+    <div class="row invoice-info">
+        <div class="col-sm-4 invoice-col">
+            <address>
+                <strong>收件人</strong><br>
+                {$address->name}<br>
+            </address>
+            <address>
+                <strong>联系电话</strong><br>
+                {$address->mobile}<br>
+            </address>
+        </div>
+        <!-- /.col -->
+        <div class="col-sm-4 invoice-col">
+
+            <address>
+                <strong>收货地址</strong><br>
+                {$address->province}{$address->city}<br>
+                {$address->country}<br>
+                {$address->detail}<br>
+            </address>
+        </div>
+        <!-- /.col -->
+        <div class="col-sm-4 invoice-col">
+            <address>
+                <strong>订单编号</strong><br>
+                {$list.order_no}<br>
+            </address>
+            <address>
+                <strong>下单时间</strong><br>
+                {$list.create_time}<br>
+            </address>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <!-- Table row -->
+    <div class="row">
+        <div class="col-xs-12 table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>商品名称</th>
+                    <th>单价</th>
+                    <th>数量</th>
+                    <th>单个总价</th>
+                    <th>打印方式</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach name="snap_items" item="value"}
+                <tr>
+                    <td>{$value->name}</td>
+                    <td>{$value->price}/元</td>
+                    <td>{$value->counts}</td>
+                    <td>￥{$value->totalPrice}</td>
+                    {if condition="$value->judge eq 1 "}
+                    <th style="color:#f7012d">单面打印</th>
+                    {else/}
+                    <th style="color:#f7012d">双面打印</th>
+                    {/if}
+                    <td><button type="button" class="btn btn-success" value="{$value->id}">下载</button></td>
+                </tr>
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <!-- accepted payments column -->
+        <div class="col-xs-6">
+            <!--<p class="lead">Payment Methods:</p>-->
+            <!--<img src="../../dist/img/credit/visa.png" alt="Visa">-->
+            <!--<img src="../../dist/img/credit/mastercard.png" alt="Mastercard">-->
+            <!--<img src="../../dist/img/credit/american-express.png" alt="American Express">-->
+            <!--<img src="../../dist/img/credit/paypal2.png" alt="Paypal">-->
+
+
+                <div class=" text-muted well well-sm no-shadow" style="width: 50%">
+                    <p class="lead">订单状态</p>
+                    {if condition="$list.status eq 1 "}
+                    <strong style="color: red">未付款</strong>
+                    {elseif condition="$list.status eq 2 "}
+                    <strong style="color: #00a65a">已付款</strong>
+                    {elseif condition="$list.status eq 3 "}
+                    <strong style="color: #0b93d5">待收货</strong>
+                    {elseif condition="$list.status eq 4 "}
+                    <strong style="color: red">等待退款</strong>
+                    {else/}
+                    <strong style="color: #0a0a0a">交易完成</strong>
+                    {/if}
+                </div>
+
+        </div>
+        <!-- /.col -->
+        <div class="col-xs-6">
+            <p class="lead">交易总价</p>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <th style="width:50%">订单总量</th>
+                        <td>{$list.total_count}</td>
+                    </tr>
+                    <tr>
+                        <th style="width:50%">订单总价</th>
+                        <td>￥{$list.total_price}</td>
+                    </tr>
+                    <tr>
+                        <th>实付款</th>
+                        <td style="color: red">￥{$list.total_price}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+</section>
+<div class="clearfix"></div>
+{/block}
+{block name="js"}
+<!-- FastClick -->
+<script src="_JS_/admin/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="_JS_/admin/dist/js/demo.js"></script>
+<script src="_JS_/admin/layer/layer.js"></script>
+<script>
+    $(".btn-success").click(function () {
+        var id = $(this).val();
+        layer.confirm('是下载该文件？', {
+            btn: ['是','否'] //按钮
+        }, function(){
+            layer.msg('操作成功！', {icon: 1});
+            window.location.href = '{:url("api/admin/download")}?id='+ id;
+        });
+    });
+</script>
+{/block}

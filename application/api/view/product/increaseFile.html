@@ -1,0 +1,157 @@
+{extend name="base/base"}
+{block name="link"}
+<!-- AdminLTE Skins. Choose a skin from the css/skins
+     folder instead of downloading all of them to reduce the load. -->
+<link rel="stylesheet" href="../../dist/css/skins/_all-skins.min.css">
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        文库管理
+        <small>上传文件</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">文库管理</a></li>
+        <li class="active">上传文件</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<!-- SELECT2 EXAMPLE -->
+<div class="box box-default">
+    <div class="box-header with-border">
+        <h3 class="box-title">上传文件资料</h3>
+
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-6">
+                <form id="upload" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="category">分类名</label>
+                        <input type="text"id="category" value="{$data.id}" style="display: none">
+                        <input type="text" class="form-control" value="{$data.name}" disabled=false>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">文件名</label>
+                        <input type="text" class="form-control" id="name" placeholder="文件名">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-price">单面价格(/元)</label>
+                        <input type="text" class="form-control" id="recipient-price" placeholder="单面价格" onkeyup="num(this)" onfocus="indataone()" onblur="outdataone()">
+                    </div>
+                    <div class="form-group">
+                        <label for="double-price">双面价格(/元)</label>
+                        <input type="text" class="form-control" id="double-price" placeholder="双面价格" onkeyup="num(this)" onfocus="indatatwo()" onblur="outdatatwo()">
+                    </div>
+                    <div class="form-group">
+                        <label for="InputFile">选择文件</label>
+                            <input type="file" name="file" id="InputFile" onchange="showPicture(this)">
+                            <p class="help-block">注意文件格式(.pdf)</p>
+                        <div class="progress-bar" style="height: 4px;"></div>
+                    </div>
+                </form>
+                <!-- /.form-group -->
+            </div>
+
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer" style="width: 50%;">
+        <button type="submit" class="btn btn-default">Cancel</button>
+        <button type="submit" class="btn btn-info pull-right" id="uploadFile">确认上传</button>
+    </div>
+    <iframe  style="width: 50%;height: 800px ;display: none;" id="look" >
+        <p>Your browser does not support iframes.</p>
+    </iframe>
+</div>
+<!-- /.box -->
+{/block}
+{block name="js"}
+<script src="../../dist/js/demo.js"></script>
+<!-- Page script -->
+<script src="_JS_/admin/layer/layer.js"></script>
+<script>
+    function num(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,""); //清除"数字"和"."以外的字符
+        obj.value = obj.value.replace(/^\./g,""); //验证第一个字符是数字
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个, 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+    };
+    function indataone() {
+        var doubleprice = $("#double-price").val();
+        if(doubleprice!=" "){
+            $("#recipient-price").val(doubleprice*4/3);
+        }
+    }
+    function indatatwo() {
+        var price = $("#recipient-price").val();
+        if(price!=" "){
+            $("#double-price").val(price*3/4);
+        }
+    }
+    function outdataone() {
+        $("#recipient-price").val();
+    }
+    function outdatatwo() {
+        $("#double-price").val();
+    }
+    $("#uploadFile").click(function () {
+        var id= $("#category").val();
+        var name = $("#name").val();
+        var price = $("#recipient-price").val();
+        var double = $("#double-price").val();
+        var formData = new FormData($('#upload')[0]);
+        formData.append("id",id);
+        formData.append("name",name);
+        formData.append("price",price);
+        formData.append("doubleprice",double);
+        $.ajax({
+            url: "{:url('api/admin/uploadFile')}",
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            cache: false,//上传文件无需缓存
+            processData:false,    //必须
+            contentType:false,    //必须
+            xhr: function() {        //ajax进度条，直接拿过去就可以用
+                var xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener("progress", function (e) {
+                        var loaded = e.loaded; //已经上传大小情况
+                        var tot = e.total; //附件总大小
+                        var per = Math.floor(100 * loaded / tot); //已经上传的百分比
+                        $('.progress-bar').animate({'width': per+'%'},500);
+                        // $('.progress-bar').css('width',per+'%');   //这里指的是进度条的宽度等于完成的百分比
+                        // $.fn.progressInit.draw(per + '%'); //绘制经度条
+                    }, false);
+                    return xhr;
+                }
+            },
+            success: function (data) {
+                if(data){
+                    layer.msg('操作成功！', {icon: 1});
+                    setTimeout("window.location.reload()",1000);
+                }
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        })
+    })
+    function showPicture(imgFile){
+        /*获取上传文件的路径*/
+        $("#look").css('display',"block");
+        document.getElementById("look").src = window.URL.createObjectURL(imgFile.files[0]);
+
+    }
+</script>
+{/block}

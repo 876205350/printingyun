@@ -1,0 +1,247 @@
+{extend name="base/base"}
+{block name="link"}
+<link rel="stylesheet" href="_CSS_/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="_CSS_/admin/dist/css/skins/_all-skins.min.css">
+<link href="_CSS_/admin/amazeui.css" rel="stylesheet" type="text/css">
+<!--<link href="_CSS_/admin/personal.css" rel="stylesheet" type="text/css">-->
+<link href="_CSS_/admin/vipstyle.css" rel="stylesheet" type="text/css">
+{/block}
+{block name="header"}
+<section class="content-header">
+    <h1>
+        用户管理
+        <small>营业统计</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">用户管理</a></li>
+        <li class="active">营业统计</li>
+    </ol>
+</section>
+{/block}
+{block name="content"}
+<section class="content">
+    <div class="row">
+        <!-- /.box-header -->
+        <div class="wrap-left">
+            <div class="wrap-list">
+                <div class="m-user">
+                    <!--个人信息 -->
+
+                    <div class="m-userinfo">
+                        <div class="m-baseinfo" style="background:url(../../admin/blue.png)">
+                            <a class="m-pic" href="">
+                                <img src="_CSS_/admin/dist/img/yun.jpg">
+                            </a>
+                            <div class="m-info">
+                                <em class="s-name">管理员</em>
+                                <div class="vip1"><a href="#"><span>新科云打印</span><em></em></a></div>
+                                <div class="safeText"><a href="#">学校：河南科技学院新科学院</a>
+                                    <!--<div class="progressBar"><span style="left: -95px;" class="progress"></span></div>-->
+                                </div>
+                                <div class="safeText">
+                                    <a href="#">地址：河南科技学院内</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="m-right">
+                            <div class="m-new">
+                                <a href=""><i class="am-icon-dropbox  am-icon-md" style="padding-right:5px ;"></i>消息盒子</a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!--个人资产-->
+                    <div class="m-userproperty">
+                        <div class="s-bar">
+                            <i class="s-icon"></i>账户
+                        </div>
+                        <p class="m-coupon" >
+                            <a href="#" style="color: #0a0a0a ">
+                                <em class="m-num" style="font: caption;">{$total} ¥</em>
+                                <span class="m-title">总额</span>
+                            </a>
+                        </p>
+                        <p class="m-wallet">
+                            <a href="#" style="color: #0a0a0a">
+                                <em class="m-num" style="font: caption;">{$prediction} ¥</em>
+                                <span class="m-title">预计到账</span>
+                            </a>
+                        </p>
+                        <p class="m-bill">
+                            <a href="#" style="color: #0a0a0a">
+                                <em class="m-num" style="font: caption;">{$todayTotal} ¥</em>
+                                <span class="m-title">今日盈利</span>
+                            </a>
+                        </p>
+                    </div>
+
+                    <div class="wallet">
+                        <div class="s-bar">
+                            <i class="s-icon"></i>今日订单
+                        </div>
+                        <p class="m-big squareS">
+                                <a href="#">
+                                    <i><img src="_CSS_/admin/allorder.png"></i>
+                                    <span class="m-title" style="color: #0a0a0a">全部订单</span>
+                                </a>
+                        </p>
+                        <p class="m-big squareA">
+                            <a href="#">
+                                <i><img src="_CSS_/admin/neworder.png"></i>
+                                <span class="m-title" style="color: #0a0a0a">新订单</span>
+                            </a>
+                        </p>
+                        <p class="m-big squareL">
+                            <a href="#">
+                                <i><img src="_CSS_/admin/returnorder.png"></i>
+                                <span class="m-title" style="color: #0a0a0a">退款订单</span>
+                            </a>
+                        </p>
+                    </div>
+
+                </div>
+                <div class="box-container-bottom"></div>
+            </div>
+        </div>
+        <!-- /.box-header --><!--订单 -->
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">交易完成订单记录</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>订单id</th>
+                            <th>商品名称</th>
+                            <th>订单编号</th>
+                            <th>操作时间</th>
+                            <th>总数量</th>
+                            <th>总价</th>
+                            <th>状态</th>
+                            <th>交易操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach name="list" item="value"}
+                        <tr>
+                            <td>{$value.id}</td>
+                            <td>{$value.snap_name}</td>
+                            <td>{$value.order_no}</td>
+                            <td>{$value.update_time|date="Y-m-d H:i:s",###}</td>
+                            <td>{$value.total_count}</td>
+                            <td>{$value.total_price}/元</td>
+                            {if condition="$value.status eq 2"}
+                            <th style="color:#f7012d">待发货</th>
+                            <th>
+                                <button type="button" class="btn btn btn-warning" value="{$value.id}">确认发货</button>
+                                <button type="button" class="btn btn-success" value="{$value.id}">查看详情</button>
+                            </th>
+                            {else/}
+                            <th style="color:#f7012d">已付款</th>
+                            <th>
+                                <button type="button" class="btn btn btn-info" value="{$value.id}">确认退款</button>
+                                <button type="button" class="btn btn-success" value="{$value.id}">查看详情</button>
+                            </th>
+                            {/if}
+
+
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>订单id</th>
+                            <th>商品名称</th>
+                            <th>订单编号</th>
+                            <th>操作时间</th>
+                            <th>总数量</th>
+                            <th>总价</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+    </div>
+</section>
+{/block}
+{block name="js"}
+<!-- DataTables -->
+<script src="_JS_/admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="_JS_/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- SlimScroll -->
+<script src="_JS_/admin/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="_JS_/admin/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="_JS_/admin/dist/js/demo.js"></script>
+<!-- page script -->
+<script src="_JS_/admin/layer/layer.js"></script>
+<script>
+    $(function () {
+        $('#example1').DataTable()
+        $('#example2').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'searching'   : false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false
+        })
+    });
+    $(".btn-warning").click(function () {
+        var id = $(this).val();
+        $.ajax({
+            type:"get",
+            url:"{:url('api/admin/closeOrder')}",
+            data:{'id':id,'num': 3 ,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+            success:function(data){
+                if(data == 3){
+                    layer.msg('操作成功！', {icon: 1});
+                    setTimeout("window.location.reload()",1000);
+                }else{
+                    layer.msg('操作失败！', {icon: 2});
+                }
+            },
+            error:function(error){
+                alert(error);
+            }
+        });
+    });
+    $(".btn-info").click(function () {
+        var id = $(this).val();
+        layer.confirm('是否同意退货？', {
+            btn: ['是','否'] //按钮
+        }, function(){
+            $.ajax({
+                type:"get",
+                url:"{:url('api/admin/closeOrder')}",
+                data:{'id':id,'num': 6 ,'__token__':'{$Request.token}'},//这里data传递过去的是序列化以后的字符串
+                success:function(data){
+                    if(data == 6){
+                        layer.msg('通过退款申请！', {icon: 1});
+                        setTimeout("window.location.reload()",1000);
+                    }else{
+                        layer.msg('操作失败！', {icon: 3});
+                    }
+                },
+                error:function(error){
+                    alert(error);
+                }
+            });
+            // layer.msg('的确很重要', {icon: 1});
+        });
+    });
+    $(".btn-success").click(function () {
+        var id = $(this).val();
+        window.location.href='{:url("api/admin/invoice")}?id='+ id ;
+    })
+</script>
+{/block}
